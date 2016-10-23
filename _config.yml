@@ -18,4 +18,5 @@ github_username:  shidahe
 # Build settings
 markdown: kramdown
 # Rdirect plugin
-gem 'jekyll-redirect-from'
+gems:
+  - jekyll-redirect-from
