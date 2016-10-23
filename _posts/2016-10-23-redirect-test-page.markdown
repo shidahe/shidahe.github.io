@@ -1,8 +1,8 @@
 ---
-layout: post
 title:  "Redirect test page"
 redirect_to:
   - http://162.246.157.121/
+layout: post
 date:   2016-10-23 15:03:30 -0700
 categories: jekyll test
 
