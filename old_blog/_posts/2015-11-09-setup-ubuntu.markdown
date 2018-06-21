@@ -1,0 +1,101 @@
+---
+layout: post
+title:  "Installing and setting up Ubuntu 14.04 on my Macbook Air"
+categories: Ubuntu MacbookAir 
+---
+
+
+For installing ubuntu 14.04 into the internal hard drive of macbook air early 2014, follow the instruction on https://help.ubuntu.com/community/MacBookAir6-2/Trusty .
+
+This time I am installing the ubuntu system into my SD card, for saving my limited and precious SSD storage and hoping it will not mess up with my internal disk when installing the next OSX update.
+
+Basically I followed the blog post http://michaelevans.org/blog/2013/01/15/boot-ubuntu-from-an-sd-card-on-your-macbook-air/ and the ubuntu community help page above. The only difference is that I installed refind instead the deprecated refit to the 50MB hfs+ partition and I also gave my ubuntu a 4GB swap partition.
+
+In order to install refind under OSX 10.11, I need to run 'csrutil disable' under the OSX recovery mode. The refind is installed by running the install.sh script with an additional argument '--root /Volume/partion-name-for-refind'. 
+
+After installing ubuntu into my SD card, the refind would fail to find all the system if it is rebooted directly to the refind. So I had to change the startup disk in OSX setting panel to OSX and press the option key every time I want to boot into the ubuntu. 
+
+I used my android phone as a network adapter to connect my macbook air to the Internet and installed the wifi driver as discribed in the ubuntu community page. Everything is awesome! and easy with the Internet.
+
+Although I installed the backlight module, the built-in screen is 0% backlight when the ubuntu is started up. I installed it one more time, waiting to see if it will fix that.
+
+It is not easy to get access to the OSX partition from the ubuntu system, so I gave up trying to mount the partition and use Dropbox to sync files between the two systems. 
+
+Customizations ##need further exploration##
+
+Customizing bash: 
+Add the following to ~/.bashrc:
+# enable full-color support 
+export TERM="xterm-256color"
+# quickly remove temporary files
+function ppp() { rm -f *% *~ .*% .*~ *.ii; }
+
+Install essential tools:
+## Manually install chrome and dropbox from their website ##
+sudo apt-get update 
+sudo apt-get upgrade
+# Install git
+sudo apt-get install git
+# Install editors
+sudo apt-get install emacs
+sudo apt-get install vim
+# Install android support for android development and/or camera streaming
+sudo apt-get install android-tools-adb android-tools-fastboot
+# Install Ubuntu tweak tool
+sudo add-apt-repository ppa:tualatrix/ppa
+sudo apt-get update
+sudo apt-get install ubuntu-tweak
+
+
+There is an error when I try to set up github pages and jekyll. Jekyll depends on ruby 2.0 or higher, but 'apt-get install ruby' will give you ruby 1.9.x. 
+# Install ruby 2.0
+sudo apt-get install ruby2.0
+sudo apt-get install ruby2.0-dev
+# Workaround for setting ruby2.0 as default 
+# Rename original out of the way, so updates/reinstalls don't squash our hack fix
+dpkg-divert --add --rename --divert /usr/bin/ruby.divert /usr/bin/ruby
+dpkg-divert --add --rename --divert /usr/bin/gem.divert /usr/bin/gem
+# Create an alternatives entry pointing ruby -> ruby2.0
+update-alternatives --install /usr/bin/ruby ruby /usr/bin/ruby2.0 1
+update-alternatives --install /usr/bin/gem gem /usr/bin/gem2.0 1
+
+I found this is not the recommended approach to set up jekyll, but I will just keep it like this for now. To do it the right way, follow the instruction on https://help.github.com/articles/using-jekyll-with-pages/ . To reverse the effect of dkpg-divert, run the same command but replace 'add' with 'remove'. To reverse the effect of update-alternatives, I GUESS it can be done by the same command with 'install' replaced by 'uninstall' (need test to proof).
+
+
+Setup ROS:
+Follow instructions on http://wiki.ros.org/indigo/Installation/Ubuntu to install ROS indigo.
+
+Setup OMPL:
+Follow instructions on http://ompl.kavrakilab.org/download.html to download and install OMPL.
+
+Installing Eclipse:
+Follow instructions on http://wiki.ros.org/IDEs. The only thing left is that eclipse requires JDK. 
+# Install openjdk 7
+sudo apt-get install default-jdk
+# Move extracted eclipse to /opt/
+sudo mv eclipse-SDK-4.2.1-linux-gtk.tar.gz /opt/
+cd /opt/
+sudo tar xzvf eclipse-SDK-4.2.1-linux-gtk.tar.gz
+# Creating launcher
+sudo gedit /usr/share/applications/eclipse.desktop 
+# Put the following into the file
+[Desktop Entry]
+Comment=Integrated Development Environment 
+NoDisplay=false 
+Name=Eclipse
+Exec=env UBUNTU_MENUPROXY= bash -i -c "/opt/eclipse/eclipse"
+Terminal=false
+Icon=/opt/eclipse/icon.xpm
+Type=Application
+Categories=IDE;Development
+X-Ayatana-Desktop-Shortcuts=NewWindow
+[NewWindow Shortcut Group]
+Name=New Window
+Exec=env UBUNTU_MENUPROXY= bash -i -c "/opt/eclipse/eclipse"
+TargetEnvironment=Unity
+
+
+Install predictive display, mcptam, svo following the instructions on github.
+
+
+
